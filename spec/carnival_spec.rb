@@ -120,9 +120,11 @@ RSpec.describe Carnival do
          ride1 = Ride.new({ name: 'Carousel', min_height: 24, admission_fee: 1, excitement: :gentle })
          ride2 = Ride.new({ name: 'Ferris Wheel', min_height: 36, admission_fee: 5, excitement: :gentle })
          ride3 = Ride.new({ name: 'Roller Coaster', min_height: 54, admission_fee: 2, excitement: :thrilling })
+         
          visitor1 = Visitor.new('Bruce', 54, '$20')
          visitor2 = Visitor.new('Tucker', 54, '$20')
          visitor3 = Visitor.new('Penny', 64, '$20')
+         
          carnival.add_ride(ride1)
          carnival.add_ride(ride2)
          carnival.add_ride(ride3)
@@ -149,11 +151,22 @@ RSpec.describe Carnival do
    end
 
    describe '#summary' do
+      it 'returns a summary with default values when no rides' do
+         carnival = Carnival.new(30)
+         expect(carnival.summary).to eq({
+            visitor_count: 0,
+            revenue_earned: 0,
+            visitors_details: {},
+            rides_details: {}
+         })
+      end
+
       it 'has a visitor_count' do
          carnival = Carnival.new(30)
          ride1 = Ride.new({ name: 'Carousel', min_height: 24, admission_fee: 1, excitement: :gentle })
          ride2 = Ride.new({ name: 'Ferris Wheel', min_height: 36, admission_fee: 5, excitement: :gentle })
          ride3 = Ride.new({ name: 'Roller Coaster', min_height: 54, admission_fee: 2, excitement: :thrilling })
+         
          visitor1 = Visitor.new('Bruce', 54, '$20')
          visitor2 = Visitor.new('Tucker', 54, '$20')
          visitor3 = Visitor.new('Penny', 64, '$20')
@@ -165,19 +178,22 @@ RSpec.describe Carnival do
          carnival.add_ride(ride3)
 
          visitor1.add_preference(:gentle)
+
          visitor2.add_preference(:gentle)
          visitor2.add_preference(:thrilling)
+
          visitor3.add_preference(:thrilling)
          visitor3.add_preference(:gentle)
+
          visitor4.add_preference(:thrilling)
          visitor4.add_preference(:gentle)
+
          visitor5.add_preference(:thrilling)
          visitor5.add_preference(:gentle)
 
          ride1.board_rider(visitor1)
          ride1.board_rider(visitor2)
          ride1.board_rider(visitor3)
-
 
          ride2.board_rider(visitor1)
          ride2.board_rider(visitor5)
@@ -188,6 +204,128 @@ RSpec.describe Carnival do
          ride3.board_rider(visitor5)
 
          expect(carnival.summary[:visitor_count]).to eq(5)
+      end
+
+      it 'has a revenue earned' do
+         carnival = Carnival.new(30)
+         ride1 = Ride.new({ name: 'Carousel', min_height: 24, admission_fee: 1, excitement: :gentle })
+         ride2 = Ride.new({ name: 'Ferris Wheel', min_height: 36, admission_fee: 5, excitement: :gentle })
+         ride3 = Ride.new({ name: 'Roller Coaster', min_height: 54, admission_fee: 2, excitement: :thrilling })
+         
+         visitor1 = Visitor.new('Bruce', 54, '$20')
+         visitor2 = Visitor.new('Tucker', 54, '$20')
+         visitor3 = Visitor.new('Penny', 64, '$20')
+         visitor4 = Visitor.new('Joseph', 60, '$20')
+         visitor5 = Visitor.new('Carl', 61, '$20')
+
+         carnival.add_ride(ride1)
+         carnival.add_ride(ride2)
+         carnival.add_ride(ride3)
+
+         visitor1.add_preference(:gentle)
+
+         visitor2.add_preference(:gentle)
+         visitor2.add_preference(:thrilling)
+
+         visitor3.add_preference(:thrilling)
+         visitor3.add_preference(:gentle)
+
+         visitor4.add_preference(:thrilling)
+         visitor4.add_preference(:gentle)
+
+         visitor5.add_preference(:thrilling)
+         visitor5.add_preference(:gentle)
+
+         ride1.board_rider(visitor1)
+         ride1.board_rider(visitor2)
+         ride1.board_rider(visitor3)
+
+         ride2.board_rider(visitor1)
+         ride2.board_rider(visitor5)
+         ride2.board_rider(visitor5)
+
+         ride3.board_rider(visitor3)
+         ride3.board_rider(visitor4)
+         ride3.board_rider(visitor2)
+         ride3.board_rider(visitor5)
+
+         expect(carnival.summary[:revenue_earned]).to eq(26)
+      end
+
+      it 'has list of visitors favorite ride and how much total money a visitor spent' do
+         carnival = Carnival.new(30)
+         ride1 = Ride.new({ name: 'Carousel', min_height: 24, admission_fee: 1, excitement: :gentle })
+         ride2 = Ride.new({ name: 'Ferris Wheel', min_height: 36, admission_fee: 5, excitement: :gentle })
+         ride3 = Ride.new({ name: 'Roller Coaster', min_height: 54, admission_fee: 2, excitement: :thrilling })
+         
+         visitor1 = Visitor.new('Bruce', 54, '$20')
+         visitor2 = Visitor.new('Tucker', 54, '$20')
+         visitor3 = Visitor.new('Penny', 64, '$20')
+         
+         carnival.add_ride(ride1)
+         carnival.add_ride(ride2)
+         carnival.add_ride(ride3)
+
+         visitor1.add_preference(:gentle)
+         visitor2.add_preference(:gentle)
+         visitor2.add_preference(:thrilling)
+         visitor3.add_preference(:thrilling)
+
+         ride1.board_rider(visitor1)
+         ride1.board_rider(visitor2)
+         ride1.board_rider(visitor1)
+
+         ride2.board_rider(visitor1)
+         ride2.board_rider(visitor2)
+
+         ride3.board_rider(visitor3)
+         ride3.board_rider(visitor3)
+         ride3.board_rider(visitor2)
+         ride3.board_rider(visitor2)
+
+         expect(carnival.summary[:visitors]).to eq({
+            'Bruce' => { favorite_ride: ['Carousel'], total_spent: 7 },
+            'Tucker' => { favorite_ride: ['Roller Coaster'], total_spent: 10}
+         })
+      end
+
+      it 'has list of rides, who rode each ride and the ride total revenue' do
+         carnival = Carnival.new(30)
+         ride1 = Ride.new({ name: 'Carousel', min_height: 24, admission_fee: 1, excitement: :gentle })
+         ride2 = Ride.new({ name: 'Ferris Wheel', min_height: 36, admission_fee: 5, excitement: :gentle })
+         ride3 = Ride.new({ name: 'Roller Coaster', min_height: 54, admission_fee: 2, excitement: :thrilling })
+         
+         visitor1 = Visitor.new('Bruce', 54, '$20')
+         visitor2 = Visitor.new('Tucker', 54, '$20')
+         visitor3 = Visitor.new('Penny', 64, '$20')
+         
+         carnival.add_ride(ride1)
+         carnival.add_ride(ride2)
+         carnival.add_ride(ride3)
+
+         visitor1.add_preference(:gentle)
+         visitor2.add_preference(:gentle)
+         visitor2.add_preference(:thrilling)
+         visitor3.add_preference(:thrilling)
+
+         ride1.board_rider(visitor1)
+         ride1.board_rider(visitor2)
+         ride1.board_rider(visitor1)
+
+         ride2.board_rider(visitor1)
+         ride2.board_rider(visitor2)
+
+         ride3.board_rider(visitor3)
+         ride3.board_rider(visitor3)
+         ride3.board_rider(visitor2)
+         ride3.board_rider(visitor2)
+
+         expect(carnival.summary[:rides]).to eq({
+            'Carousel' => { riders: ['Bruce', 'Tucker'], total_revenue: 3 },
+            'Ferris Wheel' => { riders: ['Bruce', 'Tucker'], total_revenue: 10},
+            'Roller Coaster' => { riders: ['Tucker', 'Penny'], total_revenue: 8}
+         })
+   
       end
    end
 end
