@@ -54,7 +54,7 @@ RSpec.describe Ride do
          visitor1.add_preference(:gentle)
          visitor2.add_preference(:gentle)
 
-         expect(ride1.board_rider(visitor1)).to eq({visitor1 => 1})
+         expect(ride1.board_rider(visitor1)).to eq(1)
 
          ride1.board_rider(visitor1)
          ride1.board_rider(visitor2)
