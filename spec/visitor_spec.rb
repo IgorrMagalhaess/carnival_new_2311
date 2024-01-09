@@ -70,4 +70,12 @@ RSpec.describe Visitor do
          expect(visitor1.tall_enough?(64)).to eq(false)
       end
    end
+
+   describe '#charge_visitor' do
+      it 'charge admission fee to visitor' do
+         visitor1 = Visitor.new('Bruce', 54, '$10')
+
+         expect(visitor1.charge_visitor(2)).to eq(8)
+      end
+   end
 end
